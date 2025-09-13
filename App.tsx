@@ -1,20 +1,57 @@
+import 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useIsDark } from './src/hooks/useTheme';
+import { TabNavigator } from './src/navigation';
+import './src/i18n'; // Initialize i18n
+// NativeWind v2 does not require importing a CSS file.
+import WelcomeScreen from './src/screens/auth/WelcomeScreen';
+import storage from './src/utils/storage';
+import { STORAGE_KEYS } from './src/constants';
+import { initNotifications, ensureMotivationNotification } from './src/utils/notifications';
+import { AppBackground } from './src/components/ui';
 
 export default function App() {
+  const isDark = useIsDark();
+  const [activeTab, setActiveTab] = useState('Home');
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  useEffect(() => {
+    try {
+      const raw = storage.getString(STORAGE_KEYS.USER);
+      if (raw) setShowWelcome(false);
+    } catch {
+      setShowWelcome(false);
+    }
+    // ask for notification permissions (no-op on web)
+    (async () => {
+      await initNotifications();
+      // Read saved user name to personalize motivation notifications
+      try {
+        const raw = storage.getString(STORAGE_KEYS.USER);
+        const name = raw ? (JSON.parse(raw)?.name as string | undefined) : undefined;
+        await ensureMotivationNotification(name);
+      } catch {
+        await ensureMotivationNotification();
+      }
+    })();
+  }, []);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <AppBackground>
+        {showWelcome ? (
+          <WelcomeScreen onDone={() => setShowWelcome(false)} />
+        ) : (
+          <TabNavigator activeTab={activeTab} onTabChange={handleTabChange} />
+        )}
+        <StatusBar style="light" />
+      </AppBackground>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
