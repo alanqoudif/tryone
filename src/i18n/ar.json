@@ -17,6 +17,25 @@
     "skip": "تخطي",
     "currency": "ريال"
   },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "loginWelcome": "أهلاً بعودتك! يرجى تسجيل الدخول للمتابعة",
+    "signupWelcome": "انضم إلينا اليوم وابدأ رحلتك مع تطبيقنا",
+    "noAccount": "ليس لديك حساب؟ إنشاء حساب جديد",
+    "haveAccount": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "guestLogin": "الدخول كضيف",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailInvalid": "البريد الإلكتروني غير صالح",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "passwordsNotMatch": "كلمات المرور غير متطابقة",
+    "confirmPasswordRequired": "تأكيد كلمة المرور مطلوب"
+  },
   "navigation": {
     "today": "اليوم",
     "calendar": "الجدول",
