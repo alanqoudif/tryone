@@ -349,16 +349,7 @@
     "uploadId": "رفع الهوية الجامعية",
     "setupComplete": "تم الإعداد بنجاح!"
   },
-  "auth": {
-    "phoneNumber": "رقم الهاتف",
-    "enterPhone": "أدخل رقم هاتفك",
-    "sendOtp": "إرسال الرمز",
-    "verifyOtp": "تأكيد الرمز",
-    "enterOtp": "أدخل الرمز المرسل",
-    "resendOtp": "إعادة إرسال الرمز",
-    "invalidOtp": "رمز غير صحيح",
-    "otpSent": "تم إرسال الرمز"
-  },
+  
   "quickAdd": {
     "title": "إضافة سريعة",
     "task": "مهمة",
