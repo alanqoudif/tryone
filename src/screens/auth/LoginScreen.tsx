@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, I18nManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
@@ -8,21 +8,29 @@ import { theme } from '../../constants/design';
 import storage from '../../utils/storage';
 import { STORAGE_KEYS } from '../../constants';
 
+// تأكد من تفعيل دعم اللغة العربية (RTL)
+I18nManager.forceRTL(true);
+
 interface LoginScreenProps {
   onDone?: () => void;
   onNavigateToWelcome?: () => void;
 }
 
 export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreenProps) {
+  // استخدام مكتبة الترجمة
   const { t } = useTranslation();
+  // حالة تبديل بين تسجيل الدخول وإنشاء حساب
   const [isLogin, setIsLogin] = useState(true);
+  // بيانات المستخدم
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // رسائل الخطأ
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
+  // التحقق من صحة البريد الإلكتروني
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
@@ -36,6 +44,7 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
     return true;
   };
 
+  // التحقق من صحة كلمة المرور
   const validatePassword = (password: string) => {
     if (!password.trim()) {
       setPasswordError(t('auth.passwordRequired'));
@@ -48,6 +57,7 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
     return true;
   };
 
+  // التحقق من تطابق كلمة المرور
   const validateConfirmPassword = (confirmPassword: string) => {
     if (!isLogin) {
       if (!confirmPassword.trim()) {
@@ -62,12 +72,14 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
     return true;
   };
 
+  // معالجة تقديم النموذج
   const handleSubmit = () => {
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
     const isConfirmPasswordValid = validateConfirmPassword(confirmPassword);
 
     if (isEmailValid && isPasswordValid && (isLogin || isConfirmPasswordValid)) {
+      // تأثير اهتزاز عند الضغط
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       
       // في الواقع، هنا ستقوم بإرسال طلب إلى الخادم للتسجيل أو تسجيل الدخول
@@ -87,6 +99,7 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
     }
   };
 
+  // تبديل بين وضع تسجيل الدخول وإنشاء حساب
   const toggleAuthMode = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsLogin(!isLogin);
@@ -96,6 +109,7 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
     setConfirmPasswordError('');
   };
 
+  // الانتقال إلى شاشة الترحيب
   const navigateToWelcome = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onNavigateToWelcome && onNavigateToWelcome();
@@ -110,10 +124,10 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
         <View style={styles.content}>
           {/* عنوان الصفحة */}
           <View style={styles.headerSection}>
-            <Text style={styles.headerTitle}>
+            <Text style={[styles.headerTitle, { fontFamily: Platform.OS === 'ios' ? 'Arial Hebrew' : 'Droid Arabic Naskh' }]}>
               {isLogin ? t('auth.login') : t('auth.signup')}
             </Text>
-            <Text style={styles.headerSubtitle}>
+            <Text style={[styles.headerSubtitle, { fontFamily: Platform.OS === 'ios' ? 'Arial Hebrew' : 'Droid Arabic Naskh' }]}>
               {isLogin 
                 ? t('auth.loginWelcome') 
                 : t('auth.signupWelcome')}
@@ -131,6 +145,8 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
               onChangeText={setEmail}
               error={emailError}
               containerStyle={styles.inputContainer}
+              textAlign="right"
+              textContentType="emailAddress"
             />
 
             <Input
@@ -141,6 +157,8 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
               onChangeText={setPassword}
               error={passwordError}
               containerStyle={styles.inputContainer}
+              textAlign="right"
+              textContentType="password"
             />
 
             {!isLogin && (
@@ -152,6 +170,8 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
                 onChangeText={setConfirmPassword}
                 error={confirmPasswordError}
                 containerStyle={styles.inputContainer}
+                textAlign="right"
+                textContentType="password"
               />
             )}
           </View>
@@ -166,7 +186,7 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
             />
 
             <TouchableOpacity onPress={toggleAuthMode} style={styles.toggleContainer}>
-              <Text style={styles.toggleText}>
+              <Text style={[styles.toggleText, { fontFamily: Platform.OS === 'ios' ? 'Arial Hebrew' : 'Droid Arabic Naskh' }]}>
                 {isLogin 
                   ? t('auth.noAccount') 
                   : t('auth.haveAccount')}
@@ -174,7 +194,9 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
             </TouchableOpacity>
 
             <TouchableOpacity onPress={navigateToWelcome} style={styles.skipContainer}>
-              <Text style={styles.skipText}>{t('auth.guestLogin')}</Text>
+              <Text style={[styles.skipText, { fontFamily: Platform.OS === 'ios' ? 'Arial Hebrew' : 'Droid Arabic Naskh' }]}>
+                {t('auth.guestLogin')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -183,9 +205,11 @@ export default function LoginScreen({ onDone, onNavigateToWelcome }: LoginScreen
   );
 }
 
+// أنماط الصفحة
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   keyboardContainer: {
     flex: 1,
@@ -194,6 +218,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+    // تعديل الاتجاه ليناسب اللغة العربية
+    direction: 'rtl',
   },
   headerSection: {
     marginBottom: 30,
@@ -205,17 +231,21 @@ const styles = StyleSheet.create({
     color: theme.colors.textLight,
     marginBottom: 10,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Arial' : 'sans-serif',
   },
   headerSubtitle: {
     fontSize: 16,
     color: theme.colors.textMuted,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Arial' : 'sans-serif',
   },
   formSection: {
     marginBottom: 30,
   },
   inputContainer: {
     marginBottom: 16,
+    // تعديل الاتجاه ليناسب اللغة العربية
+    textAlign: 'right',
   },
   actionsSection: {
     alignItems: 'center',
@@ -231,6 +261,7 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontSize: 16,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Arial' : 'sans-serif',
   },
   skipContainer: {
     padding: 10,
@@ -239,5 +270,6 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     fontSize: 14,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Arial' : 'sans-serif',
   },
 });
